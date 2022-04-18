@@ -19,50 +19,60 @@ namespace ShannonHuffmanEncoding
 
     internal class Program
     {
+        static public List<Node> finalNodes = new List<Node>();
+
         static void Main(string[] args)
         {
             List<Node> nodes = new List<Node>();
-            int numberOfNodes = 0;
-            Console.Write("How many characters do you want in input word?: ");
-            try
-            {
-                numberOfNodes = Convert.ToInt32(Console.ReadLine());
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine($"Input is not number value!!! {e.Message}");
-                return;
-            }
+            //int numberOfNodes = 0;
+            //Console.Write("How many characters do you want in input word?: ");
+            //try
+            //{
+            //    numberOfNodes = Convert.ToInt32(Console.ReadLine());
+            //}
+            //catch (Exception e)
+            //{
+            //    Console.WriteLine($"Input is not number value!!! {e.Message}");
+            //    return;
+            //}
 
-            Console.WriteLine(numberOfNodes);
-            for (int i = 0; i < numberOfNodes; i++)
-            {
-                double probability = 0;
-                char sourceChar = 'A';
-                Console.Write($"\nWhat is the {i + 1}. source char?: ");
-                sourceChar = Convert.ToChar(Console.ReadLine().Substring(0, 1));
-                Console.Write("\nWhat is it's probability?: ");
-                probability = Convert.ToDouble(Console.ReadLine());
-                nodes.Add(new Node("", probability, sourceChar));
-            }
+            //Console.WriteLine(numberOfNodes);
+            //for (int i = 0; i < numberOfNodes; i++)
+            //{
+            //    double probability = 0;
+            //    char sourceChar = 'A';
+            //    Console.Write($"\nWhat is the {i + 1}. source char?: ");
+            //    sourceChar = Convert.ToChar(Console.ReadLine().Substring(0, 1));
+            //    Console.Write("\nWhat is it's probability?: ");
+            //    probability = Convert.ToDouble(Console.ReadLine());
+            //    nodes.Add(new Node("", probability, sourceChar));
+            //}
             nodes.Add(new Node("", 0.3, 'A'));
             nodes.Add(new Node("", 0.25, 'B'));
             nodes.Add(new Node("", 0.2, 'C'));
             nodes.Add(new Node("", 0.12, 'D'));
             nodes.Add(new Node("", 0.08, 'E'));
             nodes.Add(new Node("", 0.05, 'F'));
+
+            double prob = 0;
             foreach (Node item in nodes)
-            {
-                Console.WriteLine($"{item.sourceChar} p: {item.probability}");
-            }
+                prob += item.probability;
+
+            if(prob != 1)
+                throw new Exception("Probability must be equal to 1");
 
             nodes.Sort((a, b) => b.probability.CompareTo(a.probability)); // sort big to low
             Shannon_Fano(nodes);
+            FullDraw(finalNodes);
         }
 
         static void Shannon_Fano(List<Node> nodes)
         {
-            if (nodes.Count == 1) return;
+            if (nodes.Count == 1) 
+            {
+                finalNodes.Add(nodes[0]);
+                return;
+            }
 
             double prob_first_half = 0;
             double min_dif = 0;
@@ -116,7 +126,7 @@ namespace ShannonHuffmanEncoding
             {
                 Console.WriteLine($"{item.sourceChar} p: {item.probability} b: {item.codeNum}");
             }
-
+            Console.WriteLine("--------------------------------------------");
             Shannon_Fano(first_half);
             Shannon_Fano(second_half);
         }
@@ -133,11 +143,21 @@ namespace ShannonHuffmanEncoding
         {
             double H = 0;
             foreach (var item in nodes)
-            {
                 H += item.probability * Math.Log2(item.probability);
-            }
-            double n = (H / AverageLengthOfCodeWord(nodes)) * 100;
+            double n = (-H / AverageLengthOfCodeWord(nodes)) * 100;
             return n;
+        }
+
+        static void FullDraw(List<Node> nodes)
+        {
+            Console.WriteLine("{0,-10} {1, 8:N1} {2, 10}", "Input word", "Probability", "Encoding");
+            foreach (var item in nodes)
+            {
+                Console.WriteLine("{0,-10} {1, 8:N3} {2, 10}", item.sourceChar, item.probability, item.codeNum);
+            }
+            Console.WriteLine($"AverageLength: {AverageLengthOfCodeWord(nodes)}");
+            Console.WriteLine($"Efectivity: {Efectivity(nodes)}%");
+            
         }
     }
 }
