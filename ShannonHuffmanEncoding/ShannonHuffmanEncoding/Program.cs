@@ -23,28 +23,28 @@ namespace ShannonHuffmanEncoding
         {
             List<Node> nodes = new List<Node>();
             int numberOfNodes = 0;
-            //Console.Write("How many characters do you want in input word?: ");
-            //try
-            //{
-            //    numberOfNodes = Convert.ToInt32(Console.ReadLine());
-            //}
-            //catch (Exception e)
-            //{
-            //    Console.WriteLine($"Input is not number value!!! {e.Message}");
-            //    return;
-            //}
+            Console.Write("How many characters do you want in input word?: ");
+            try
+            {
+                numberOfNodes = Convert.ToInt32(Console.ReadLine());
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Input is not number value!!! {e.Message}");
+                return;
+            }
 
-            //Console.WriteLine(numberOfNodes);
-            //for (int i = 0; i < numberOfNodes; i++)
-            //{
-            //    double probability = 0;
-            //    char sourceChar = 'A';
-            //    Console.Write($"\nWhat is the {i + 1}. source char?: ");
-            //    sourceChar = Convert.ToChar(Console.ReadLine().Substring(0,1));
-            //    Console.Write("\nWhat is it's probability?: ");
-            //    probability = Convert.ToDouble(Console.ReadLine());
-            //    nodes.Add(new Node("", probability, sourceChar));
-            //}
+            Console.WriteLine(numberOfNodes);
+            for (int i = 0; i < numberOfNodes; i++)
+            {
+                double probability = 0;
+                char sourceChar = 'A';
+                Console.Write($"\nWhat is the {i + 1}. source char?: ");
+                sourceChar = Convert.ToChar(Console.ReadLine().Substring(0, 1));
+                Console.Write("\nWhat is it's probability?: ");
+                probability = Convert.ToDouble(Console.ReadLine());
+                nodes.Add(new Node("", probability, sourceChar));
+            }
             nodes.Add(new Node("", 0.3, 'A'));
             nodes.Add(new Node("", 0.25, 'B'));
             nodes.Add(new Node("", 0.2, 'C'));
@@ -119,6 +119,25 @@ namespace ShannonHuffmanEncoding
 
             Shannon_Fano(first_half);
             Shannon_Fano(second_half);
+        }
+
+        static double AverageLengthOfCodeWord(List<Node> nodes)
+        {
+            double averageLength = 0;
+            foreach (var item in nodes)
+                averageLength += item.probability * item.codeNum.Length;
+            return averageLength;
+        }
+
+        static double Efectivity(List<Node> nodes)
+        {
+            double H = 0;
+            foreach (var item in nodes)
+            {
+                H += item.probability * Math.Log2(item.probability);
+            }
+            double n = (H / AverageLengthOfCodeWord(nodes)) * 100;
+            return n;
         }
     }
 }
