@@ -3,15 +3,15 @@ using System.Collections.Generic;
 
 namespace ShannonHuffmanEncoding
 {
-    struct Node
+    class Node
     {
-        public string codeNum;
+        public string codeWord { get; set; }
         public double probability;
         public char sourceChar;
 
-        public Node(string codeNum, double probability, char sourceChar)
+        public Node(string codeWord, double probability, char sourceChar)
         {
-            this.codeNum = codeNum;
+            this.codeWord = codeWord;
             this.probability = probability;
             this.sourceChar = sourceChar;
         }
@@ -63,14 +63,14 @@ namespace ShannonHuffmanEncoding
 
             nodes.Sort((a, b) => b.probability.CompareTo(a.probability)); // sort big to low
             Shannon_Fano(nodes);
-            FullDraw(finalNodes);
+            FullDraw(nodes);
         }
 
         static void Shannon_Fano(List<Node> nodes)
         {
             if (nodes.Count == 1) 
             {
-                finalNodes.Add(nodes[0]);
+                //finalNodes.Add(nodes[0]);
                 return;
             }
 
@@ -102,29 +102,36 @@ namespace ShannonHuffmanEncoding
             List<Node> first_half = new List<Node>();
             for (int i = 0; i < half_index + 1; i++)
             {
-                Node temp = nodes[i];
-                temp.codeNum += "0";
-                nodes[i] = temp;
+                //Node temp = nodes[i];
+                //temp.codeWord += "0";
+                //nodes[i] = temp;
+                ////Node t = nodes[i];
+                ////t.codeWord = "";
+                ////nodes[i] = t;
+                nodes[i].codeWord += "0";
                 first_half.Add(nodes[i]);
+                
+                
             }
 
             List<Node> second_half = new List<Node>();
             for (int i = half_index + 1; i < nodes.Count; i++)
             {
-                Node temp = nodes[i];
-                temp.codeNum += "1";
-                nodes[i] = temp;
+                //Node temp = nodes[i];
+                //temp.codeWord += "1";
+                //nodes[i] = temp;
+                nodes[i].codeWord += "1";
                 second_half.Add(nodes[i]);
             }
             Console.WriteLine("--------------------------------------------");
             foreach (Node item in first_half)
             {
-                Console.WriteLine($"{item.sourceChar} p: {item.probability} b: {item.codeNum}");
+                Console.WriteLine($"{item.sourceChar} p: {item.probability} b: {item.codeWord}");
             }
 
             foreach (Node item in second_half)
             {
-                Console.WriteLine($"{item.sourceChar} p: {item.probability} b: {item.codeNum}");
+                Console.WriteLine($"{item.sourceChar} p: {item.probability} b: {item.codeWord}");
             }
             Console.WriteLine("--------------------------------------------");
             Shannon_Fano(first_half);
@@ -135,11 +142,11 @@ namespace ShannonHuffmanEncoding
         {
             double averageLength = 0;
             foreach (var item in nodes)
-                averageLength += item.probability * item.codeNum.Length;
+                averageLength += item.probability * item.codeWord.Length;
             return averageLength;
         }
 
-        static double Efectivity(List<Node> nodes)
+        static double Effectivity(List<Node> nodes)
         {
             double H = 0;
             foreach (var item in nodes)
@@ -153,10 +160,10 @@ namespace ShannonHuffmanEncoding
             Console.WriteLine("{0,-10} {1, 8:N1} {2, 10}", "Input word", "Probability", "Encoding");
             foreach (var item in nodes)
             {
-                Console.WriteLine("{0,-10} {1, 8:N3} {2, 10}", item.sourceChar, item.probability, item.codeNum);
+                Console.WriteLine("{0,-10} {1, 8:N3} {2, 10}", item.sourceChar, item.probability, item.codeWord);
             }
             Console.WriteLine($"AverageLength: {AverageLengthOfCodeWord(nodes)}");
-            Console.WriteLine($"Efectivity: {Efectivity(nodes)}%");
+            Console.WriteLine($"Effectivity: {Effectivity(nodes)}%");
             
         }
     }
