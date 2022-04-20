@@ -19,11 +19,36 @@ namespace ShannonHuffmanEncoding
 
     internal class Program
     {
-        static public List<Node> finalNodes = new List<Node>();
-
         static void Main(string[] args)
         {
+            Dictionary<char, int> alphabet = new Dictionary<char, int>();
             List<Node> nodes = new List<Node>();
+            string inputWord;
+
+            Console.Write("Write your input word: ");
+            inputWord = Console.ReadLine();
+            for (int i = 0; i < inputWord.Length; i++)
+            {
+                char sourceChar = inputWord[i];
+                if (alphabet.ContainsKey(sourceChar))
+                {
+                    alphabet[sourceChar] += 1;
+                }
+                else
+                {
+                    alphabet.Add(sourceChar, 1);
+                }
+            }
+            foreach (KeyValuePair<char, int> kvp in alphabet)
+            {
+                Console.WriteLine($"Key: {kvp.Key} Value: {kvp.Value}");
+                double probability = (double)kvp.Value / (double)inputWord.Length;
+                nodes.Add(new Node("", probability, kvp.Key));
+            }
+            foreach (Node item in nodes)
+            {
+                Console.WriteLine($"{item.sourceChar} p: {item.probability}");
+            }
             //int numberOfNodes = 0;
             //Console.Write("How many characters do you want in input word?: ");
             //try
@@ -47,19 +72,19 @@ namespace ShannonHuffmanEncoding
             //    probability = Convert.ToDouble(Console.ReadLine());
             //    nodes.Add(new Node("", probability, sourceChar));
             //}
-            nodes.Add(new Node("", 0.3, 'A'));
-            nodes.Add(new Node("", 0.25, 'B'));
-            nodes.Add(new Node("", 0.2, 'C'));
-            nodes.Add(new Node("", 0.12, 'D'));
-            nodes.Add(new Node("", 0.08, 'E'));
-            nodes.Add(new Node("", 0.05, 'F'));
+            //nodes.Add(new Node("", 0.3, 'A'));
+            //nodes.Add(new Node("", 0.25, 'B'));
+            //nodes.Add(new Node("", 0.2, 'C'));
+            //nodes.Add(new Node("", 0.12, 'D'));
+            //nodes.Add(new Node("", 0.08, 'E'));
+            //nodes.Add(new Node("", 0.05, 'F'));
 
             double prob = 0;
             foreach (Node item in nodes)
                 prob += item.probability;
 
-            if(prob != 1)
-                throw new Exception("Probability must be equal to 1");
+            //if (prob !>= 1)
+            //    throw new Exception("Probability must be equal to 1");
 
             nodes.Sort((a, b) => b.probability.CompareTo(a.probability)); // sort big to low
             Shannon_Fano(nodes);
@@ -68,15 +93,12 @@ namespace ShannonHuffmanEncoding
 
         static void Shannon_Fano(List<Node> nodes)
         {
-            if (nodes.Count == 1) 
-            {
-                //finalNodes.Add(nodes[0]);
+            if (nodes.Count == 1)
                 return;
-            }
 
             double prob_first_half = 0;
             double min_dif = 0;
-            int half_index = 0;
+            int split_index = 0;
 
             for (int i = 0; i < nodes.Count; i++)
             {
@@ -94,33 +116,22 @@ namespace ShannonHuffmanEncoding
                 }
                 else if (Math.Abs(prob_first_half - prob_second_half) > min_dif)
                 {
-                    half_index = i-1;
+                    split_index = i-1;
                     break;
                 }
             }
 
             List<Node> first_half = new List<Node>();
-            for (int i = 0; i < half_index + 1; i++)
+            for (int i = 0; i < split_index + 1; i++)
             {
-                //Node temp = nodes[i];
-                //temp.codeWord += "0";
-                //nodes[i] = temp;
-                ////Node t = nodes[i];
-                ////t.codeWord = "";
-                ////nodes[i] = t;
-                nodes[i].codeWord += "0";
+                nodes[i].codeWord += "1";
                 first_half.Add(nodes[i]);
-                
-                
             }
 
             List<Node> second_half = new List<Node>();
-            for (int i = half_index + 1; i < nodes.Count; i++)
+            for (int i = split_index + 1; i < nodes.Count; i++)
             {
-                //Node temp = nodes[i];
-                //temp.codeWord += "1";
-                //nodes[i] = temp;
-                nodes[i].codeWord += "1";
+                nodes[i].codeWord += "0";
                 second_half.Add(nodes[i]);
             }
             Console.WriteLine("--------------------------------------------");
@@ -163,7 +174,7 @@ namespace ShannonHuffmanEncoding
                 Console.WriteLine("{0,-10} {1, 8:N3} {2, 10}", item.sourceChar, item.probability, item.codeWord);
             }
             Console.WriteLine($"AverageLength: {AverageLengthOfCodeWord(nodes)}");
-            Console.WriteLine($"Effectivity: {Effectivity(nodes)}%");
+            Console.WriteLine($"Effectivity: {Effectivity(nodes)} %");
             
         }
     }
